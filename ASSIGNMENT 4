@@ -1,0 +1,113 @@
+# imports declared
+
+import random
+import matplotlib.pyplot as plt
+import numpy as np
+from plotly.graph_objs import Bar, Layout
+from plotly import offline
+
+#classes declared 
+
+class Hero:
+  def __init__(self, name, level, weaponname):
+  	self.name = name
+  	self.level = level
+  	self.weaponname = weaponname
+  	self.life = 100
+  	self.damage = 0
+  	self.attack = 0
+  	self.totaldamage = 0
+  def AttackPoints(self):
+    self.attack = (random.randrange(10,50))
+  def imHit(self, hitdamage):
+    self.life = int(self.life) - int(hitdamage)
+    print(self.name+" screams- I'm hit! They have only "+ str(self.life) +" life points left")
+class Villian(Hero):
+  def __init__(self, name, level, weaponname):
+    Hero.__init__(self,name, level, weaponname)
+  
+# main code
+
+inputheroname = input("Please input the hero's name: ")
+inputherolevel = input("Please input the hero's level: ")
+inputheroweapon = input("Please input the hero's weapon: ")
+Hero1 = Hero(inputheroname, inputherolevel, inputheroweapon)
+Villian1 = Villian("Darthvader","13","Forcelightning")
+Fightround = 0
+Fightroundlist = []
+Battlenumber = 1
+Battlelist = []
+Herovaluelist = []
+Villianvaluelist = []
+Totaldamagelist = []
+Herowins = 0
+Villianwins = 0
+Draws = 0
+Totaldamage =  0
+inputbattle = "yes"
+
+while inputbattle == "yes":
+	print("Battle number " +str(Battlenumber))
+	Villian1.life = 100
+	Hero1.life = 100
+	while ((Villian1.life > 0) and (Hero1.life > 0)):
+		print("Round " + str(Fightround)+ ". Fight!!" )
+		Heroattack = Hero1.AttackPoints()
+		Villianattack = Villian1.AttackPoints()
+		print(Hero1.name+ " attacks using " +Hero1.weaponname)
+		Villian1.imHit(Hero1.attack)
+		print(Villian1.name+ " then attacks using " +Villian1.weaponname)
+		Hero1.imHit(Villian1.attack)
+		Villianvaluelist.append(Villian1.attack)
+		Herovaluelist.append(Hero1.attack)
+		Totaldamagelist.append(Villian1.attack + Hero1.attack)
+		Fightround +=1
+		Fightroundlist.append(Fightround)
+		if ((Villian1.life <= 0) and (Hero1.life <=0)):
+			print("They're both knocked out!")
+			Draws += 1
+			break
+		elif (Villian1.life <=0):
+			print("Hero wins this round!")
+			Herowins += 1
+			break
+		elif (Hero1.life <=0):
+			print("Not winning today it seems. Try again later")
+			Villianwins += 1
+			break
+		else:
+			continue
+	
+	plt.style.use('seaborn-darkgrid')
+	fig,ax = plt.subplots()
+	ax.scatter(Fightroundlist, Herovaluelist, color = 'blue')
+	ax.scatter(Fightroundlist, Villianvaluelist, color = 'red')
+	ax.set_title("Hero vs. Villian Values", fontsize = 24)
+	ax.set_xlabel("Round number", fontsize = 10)
+	ax.set_ylabel("Attack values", fontsize = 10)
+	ax.tick_params(axis = 'both', labelsize = 10)
+	plt.show()
+
+	inputbattle = input("Do you wish to battle again? ")
+	Battlenumber += 1
+	continue
+	if inputbattle == "no":
+		break
+
+y = np.array([Herowins, Villianwins, Draws])
+graphlabels = ['Heroes', 'Villians', 'Draws']
+plt.pie(y, labels = graphlabels)
+plt.show()
+
+data = [Bar( x = Fightroundlist, y =Totaldamagelist)]
+xaxisconfig = {'title': 'Fight rounds'}
+yaxisconfig = {'title' : 'Total Damage done'}
+My_layout = Layout(title = 'Damage by rounds', xaxis = xaxisconfig, yaxis= yaxisconfig)
+offline.plot({'data':data, 'layout': My_layout,}, filename = 'finalgraph.html')
+
+
+#print(Herowins)
+#print(Villianwins)
+#print(len(Fightroundlist))
+#print(len(Herovaluelist))
+#print(len(Villianvaluelist))
